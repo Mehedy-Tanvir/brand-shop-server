@@ -37,6 +37,12 @@ async function run() {
       const result = await productsCollection.insertOne(product);
       res.send(result);
     });
+    app.get("/brands/:name", async (req, res) => {
+      const brand = req.params.name;
+      const query = { brand };
+      const result = await productsCollection.find(query).toArray();
+      res.send(result);
+    });
 
     // db ping
     await client.db("admin").command({ ping: 1 });
