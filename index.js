@@ -73,6 +73,31 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/userCart/:uid", async (req, res) => {
+      const userId = req.params.uid;
+      const filter = { user: userId };
+      const { user, cart } = req.body;
+      const userCart = await usersCollection.findOne(filter);
+      const options = { upsert: true };
+      if (userCart) {
+        const newCart = [...userCart.cart, cart[0]];
+        const updateCart = {
+          $set: {
+            user,
+            cart: newCart,
+          },
+        };
+        const result = await usersCollection.updateOne(
+          filter,
+          updateCart,
+          options
+        );
+        res.send(result);
+      } else {
+        const result = await usersCollection.insertOne(req.body);
+        res.send(result);
+      }
+    });
     // db ping
     await client.db("admin").command({ ping: 1 });
     console.log(
