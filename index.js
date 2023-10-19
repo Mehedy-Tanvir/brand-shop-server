@@ -72,6 +72,12 @@ async function run() {
       );
       res.send(result);
     });
+    app.get("/userCart/:uid", async (req, res) => {
+      const userId = req.params.uid;
+      const query = { user: userId };
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+    });
 
     app.put("/userCart/:uid", async (req, res) => {
       const userId = req.params.uid;
@@ -97,6 +103,27 @@ async function run() {
         const result = await usersCollection.insertOne(req.body);
         res.send(result);
       }
+    });
+    app.put("/removeFromCart/:uid", async (req, res) => {
+      const userId = req.params.uid;
+      const filter = { user: userId };
+      const { user, index } = req.body;
+      const userCart = await usersCollection.findOne(filter);
+      const newCart = [...userCart.cart];
+      newCart.splice(index, 1);
+      const options = { upsert: true };
+      const updateCart = {
+        $set: {
+          user,
+          cart: newCart,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateCart,
+        options
+      );
+      res.send(result);
     });
     // db ping
     await client.db("admin").command({ ping: 1 });
