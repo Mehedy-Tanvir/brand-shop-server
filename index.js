@@ -23,7 +23,21 @@ const client = new MongoClient(uri, {
   },
 });
 async function run() {
+  // Send a ping to confirm a successful connection
   try {
+    // Get the database and collection on which to run the operation
+
+    const database = client.db("brandsDB");
+
+    const productsCollection = database.collection("products");
+    const usersCollection = database.collection("users");
+
+    app.post("/products", async (req, res) => {
+      const product = req.body;
+      const result = await productsCollection.insertOne(product);
+      res.send(result);
+    });
+
     // db ping
     await client.db("admin").command({ ping: 1 });
     console.log(
