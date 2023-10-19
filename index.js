@@ -49,6 +49,29 @@ async function run() {
       const result = await productsCollection.findOne(query);
       res.send(result);
     });
+    app.put("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const { name, image, brand, type, price, rating, description } = req.body;
+      const options = { upsert: true };
+      const updateProduct = {
+        $set: {
+          name,
+          image,
+          brand,
+          type,
+          price,
+          rating,
+          description,
+        },
+      };
+      const result = await productsCollection.updateOne(
+        filter,
+        updateProduct,
+        options
+      );
+      res.send(result);
+    });
 
     // db ping
     await client.db("admin").command({ ping: 1 });
