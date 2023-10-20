@@ -31,6 +31,11 @@ async function run() {
 
     const productsCollection = database.collection("products");
     const usersCollection = database.collection("users");
+    const companiesCollection = database.collection("company");
+    app.get("/companies", async (req, res) => {
+      const result = await companiesCollection.find().toArray();
+      res.send(result);
+    });
 
     app.post("/products", async (req, res) => {
       const product = req.body;
